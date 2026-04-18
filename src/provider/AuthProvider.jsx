@@ -1,9 +1,13 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, GithubAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from "firebase/auth";
 import app from '../Firebase/firebase.init';
+import { GoogleAuthProvider } from "firebase/auth";
 export const AuthContext = createContext();
 
 const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+const githubProvider = new GithubAuthProvider();
+
 const AuthProvider = ({children}) => {
     // value share
     const [user,setUser] = useState(null);
@@ -21,6 +25,13 @@ const AuthProvider = ({children}) => {
 
     const updateUser = (updatedData) =>{
         return updateProfile(auth.currentUser,updatedData);
+    }
+
+    const googleSignin = ()=>{
+        return signInWithPopup(auth,googleProvider);
+    }
+    const githubSignin = () =>{
+        return signInWithPopup(auth,githubProvider);
     }
 
     const logOut = () =>{
@@ -46,6 +57,8 @@ const AuthProvider = ({children}) => {
       loading,
       setLoading,
       updateUser,
+      googleSignin,
+      githubSignin
     };
 
     return <AuthContext.Provider value={authData}>
